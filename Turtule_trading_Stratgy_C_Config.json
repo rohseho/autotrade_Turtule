@@ -1,0 +1,89 @@
+{
+  "strategy_info": {
+    "name": "Turtule Trading Strategy C",
+    "description": "Donchian channel breakout strategy with volatility-based position sizing.",
+    "version": "1.0",
+    "author": "Seho"
+  },
+  "api_settings": {
+    "use_env_keys": true,
+    "description": "If true, API keys will be loaded from the .env file. Otherwise, provide them below."
+  },
+  "investment_allocation": {
+    "total_account_usage_ratio": 0.5,
+    "description": "Percentage of total account balance to be used for this strategy (e.g., 0.5 for 50%)."
+  },
+  "strategy_settings": {
+    "donchian_periods": [5, 10, 20, 30, 45, 60],
+    "description_donchian": "The 'X' periods for the Donchian Channel strategy.",
+    "volatility_period": 90,
+    "description_volatility": "Period in days for calculating historical volatility.",
+    "volatility_target": 0.25,
+    "description_volatility_target": "Target volatility (25%) used for position sizing adjustment."
+  },
+  "coin_allocation": {
+    "BTC/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "ETH/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "SOL/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "1000SHIB/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "DOGE/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "1000PEPE/USDT": {
+        "active": true,
+        "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "AVAX/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "XRP/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "TRX/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    },
+    "BNB/USDT": {
+      "active": true,
+      "long_only": false,
+      "long_leverage": 5,
+      "short_leverage": 0
+    }
+  },
+  "notifications": {
+    "discord": true
+  }
+}

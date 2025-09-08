@@ -1,0 +1,50 @@
+{
+  "strategy_info": {
+    "name": "Turtule Trading Strategy C - Backtest Config",
+    "description": "Configuration for backtesting the Donchian channel breakout strategy.",
+    "version": "1.0",
+    "author": "Seho"
+  },
+    "backtest_settings": {
+      "start_date": "2023-01-01",
+      "end_date": "2025-08-31",
+    "initial_capital": 10000.0,
+    "fee_rate": 0.0004,
+    "description": "end_date will be automatically adjusted to today's date if it's in the future"
+  },
+  "investment_allocation": {
+    "total_account_usage_ratio": 0.99,
+    "description": "Percentage of total account balance to be used for this strategy."
+  },
+  "strategy_settings": {
+    "donchian_periods": [ 5, 10, 20, 30, 45, 60],
+    "description_donchian": "The 'X' periods for the Donchian Channel strategy.",
+    "volatility_period": 90,
+    "volatility_target": 0.25,
+    "max_positions_per_coin": 1,
+    "max_total_positions": 10,
+    "use_hedge_mode": true
+  },
+  "backtest_coin_settings": {
+    "description": "Global settings applied to all coins in the target_coins list below.",
+    "long_only": true,
+    "leverage_long": 10,
+    "leverage_short": 0,
+    "target_coins": [
+      "BTC/USDT",
+      "ETH/USDT",
+      "SOL/USDT",
+      "1000SHIB/USDT",
+      "DOGE/USDT",
+      "1000PEPE/USDT",
+      "AVAX/USDT",
+      "XRP/USDT",
+      "TRX/USDT",
+      "BNB/USDT"
+    ]
+  },
+  "discord_settings": {
+    "send_alerts": true,
+    "description": "Set to true to send alerts to Discord (requires .env file)."
+  }
+}
