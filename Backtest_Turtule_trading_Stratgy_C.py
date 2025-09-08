@@ -130,6 +130,7 @@ class TurtleStrategyBacktester:
             }
         })
         self.historical_data = {}
+        self.coin_effective_periods = {}
         
         # --- Enhanced State variables ---
         self.cash = self.initial_capital # Total cash includes non-strategy funds
@@ -186,45 +187,35 @@ class TurtleStrategyBacktester:
         print("✅ Data fetching complete.")
 
     def _adjust_backtest_period(self):
-        """Adjust backtest period based on available data."""
+        """Summarize per-coin effective periods while keeping configured dates.
+
+        - Do NOT force a common start across coins.
+        - Global start/end remain those from the config (end capped at today earlier).
+        - Each coin effectively starts from max(config_start, coin_listing_date).
+        """
         if not self.historical_data:
             return
-            
-        # Find the common date range across all coins
-        earliest_start = None
-        latest_end = None
-        
+
+        config_start = self.start_date
+        config_end = self.end_date
+
+        print("📅 백테스트 기간 요약 (설정값 유지, 코인별 상장일 이후 적용):")
         for coin, df in self.historical_data.items():
             if df.empty:
+                print(f"  - {coin}: 데이터 없음")
                 continue
-                
-            data_start = df.index.min()
-            data_end = df.index.max()
-            
-            if earliest_start is None or data_start > earliest_start:
-                earliest_start = data_start
-            if latest_end is None or data_end < latest_end:
-                latest_end = data_end
-        
-        if earliest_start is None or latest_end is None:
-            print("❌ No valid data found for backtest period adjustment.")
-            return
-            
-        # Add buffer for volatility and donchian calculations
-        buffer_days = self.volatility_period + max(self.donchian_periods) + 5
-        adjusted_start = earliest_start + pd.Timedelta(days=buffer_days)
-        
-        # Use the adjusted dates
-        original_start = self.start_date
-        original_end = self.end_date
-        
-        self.start_date = max(adjusted_start, earliest_start)
-        self.end_date = min(latest_end, latest_end)  # Use available end date
-        
-        print(f"📅 백테스트 기간 조정:")
-        print(f"  원래 기간: {original_start.date()} ~ {original_end.date()}")
-        print(f"  데이터 범위: {earliest_start.date()} ~ {latest_end.date()}")
-        print(f"  조정된 기간: {self.start_date.date()} ~ {self.end_date.date()}")
+
+            data_start = pd.to_datetime(df.index.min())
+            data_end = pd.to_datetime(df.index.max())
+            effective_start = max(config_start, data_start)
+            effective_end = min(config_end, data_end)
+            self.coin_effective_periods[coin] = {
+                'start': effective_start,
+                'end': effective_end
+            }
+            print(f"  - {coin}: 데이터 {data_start.date()}~{data_end.date()} | 적용 {effective_start.date()}~{effective_end.date()}")
+
+        print(f"  ▶ 실행 기간(전역): {config_start.date()} ~ {config_end.date()}")
 
     def run_backtest(self):
         self._fetch_data()
@@ -254,10 +245,16 @@ class TurtleStrategyBacktester:
                     print(f"⚠️ {coin} not in historical_data")
                     continue
 
+                # Respect coin-specific effective period (listing date to last data)
+                coin_period = self.coin_effective_periods.get(coin)
+                if coin_period:
+                    if current_date < coin_period['start'] or current_date > coin_period['end']:
+                        continue
+
                 df = self.historical_data[coin]
                 data_until_today = df[df.index <= current_date]
                 if data_until_today.empty: 
-                    print(f"⚠️ {coin} data_until_today is empty for {current_date}")
+                    # Before listing or no data yet for this date; skip quietly
                     continue
 
                 vol_data = data_until_today.tail(self.volatility_period + 1)
